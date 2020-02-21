@@ -1,12 +1,16 @@
-import os, sys, youtube_dl, ffmpeg, click, re, logging
+import os, sys, youtube_dl, ffmpeg, click, re, logging, glob, json, ast
 from pathlib import PurePath
 
 # Download video from URL, return output file name
 def ydl(url, ydl_opts={}):
     ydl_opts['writeinfojson'] = True
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
-    
+        ydl.download([url])
+    json_file_name = glob.glob(str(PurePath(ydl_opts['output']).parent) + '/*.json')
+    print("json_file: ", json_file_name)
+    with open(json_file_name) as json_file:
+        info_dict = ast.literal_eval(json_file.read())
+        print('source file name: ' + ydl.prepare_filename(ydl, info_dict))
 
 # Check a list of clip specifier strings and return the bad ones.
 def check_clip_specs(specs):
@@ -55,7 +59,7 @@ def cmd(url, clip, format_, ydl_opts, output=os.path.join('clippyr_output', '%(t
 
     # TODO: If directory clippyr_output doesn't exist, create it.
 
-    out_file = ydl(url, {'output': output})
+    source_file = ydl(url, ydl_opts={'output': output})
 
     for s in check_clip_specs(clip):
         print('Bad clip specifier "' + s + '"')
