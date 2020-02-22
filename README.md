@@ -1,7 +1,7 @@
 # clippyr
 A script that extracts a specified series of clips from a larger video file, which can be an existing local file or downloaded by the script via [youtube-dl](https://github.com/ytdl-org/youtube-dl).
 
-Usage: clippyr.py [OPTIONS]
+Usage: clippyr.py `[OPTIONS]`
 
 Options:
   -f, --file TEXT    File to clip from. Cannot be used with -u.
