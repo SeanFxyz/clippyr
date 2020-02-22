@@ -29,7 +29,7 @@ def unpack_spec(spec):
         return (l[0], l[1])
     exit(1)
 
-# Extract clip from input_file, specified by 
+# Extract clips from input_file, specified by 
 def extract_clips(input_file, clips):
     for i in range(len(clips)):
         clip = clips[i]
@@ -48,11 +48,20 @@ def extract_clips(input_file, clips):
 
 
 @click.command(context_settings={'ignore_unknown_options': True})
-@click.option('-u', '--url', default='', help='The URL of a video to be downloaded.')
+@click.option('-f', '--file', 'in_file', default='', multiple=False, help='File to clip from.')
+@click.option('-u', '--url', default='', multiple=False, help='The URL of a video to be downloaded.')
 @click.option('-c', '--clip', default=None, multiple=True, help='The section of the last specified video to extract.')
 @click.option('-o', '--output', default=os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s'), help='Directory to store output files.')
 @click.argument('ydl_opts', nargs=-1)
-def cmd(url, clip, ydl_opts, output=os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s')):
+def clippyr(url, in_file, clip, ydl_opts, output=os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s')):
+
+    if in_file and url:
+        click.echo('Cannot use -f/--file and -u/--url simultaneously.')
+        exit(1)
+    
+    if in_file == '' and url == '':
+        click.echo('Must provide a url with -u or file name with -f')
+        exit(1)
 
 
     output_dir = str(PurePath(output).parent)
@@ -60,9 +69,12 @@ def cmd(url, clip, ydl_opts, output=os.path.join('output_clippyr', '%(title)s-%(
         if output_dir == 'output_clipper':
             os.mkdir('output_clippyr')
         else:
-            click.echo('Nonexistant non-default output directory ' + output_dir, err=True)
+            click.echo('Nonexistent non-default output directory ' + output_dir, err=True)
 
-    source_file = ydl_download(url, ydl_opts={'outtmpl': output})
+    if url:
+        source_file = ydl_download(url, ydl_opts={'outtmpl': output})
+    elif in_file:
+        source_file = in_file
 
     for s in check_clip_specs(clip):
         print('Bad clip specifier "' + s + '"')
@@ -71,5 +83,5 @@ def cmd(url, clip, ydl_opts, output=os.path.join('output_clippyr', '%(title)s-%(
     extract_clips(source_file, clip)
 
 if __name__=='__main__':
-    cmd()
+    clippyr()
     exit(0)
