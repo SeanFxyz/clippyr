@@ -48,11 +48,10 @@ def extract_clips(input_file, clips):
 
 
 @click.command(context_settings={'ignore_unknown_options': True})
-@click.option('-f', '--file', 'in_file', default='', multiple=False, help='File to clip from.')
-@click.option('-u', '--url', default='', multiple=False, help='The URL of a video to be downloaded.')
+@click.option('-f', '--file', 'in_file', default='', multiple=False, help='File to clip from. Cannot be used with -u.')
+@click.option('-u', '--url', default='', multiple=False, help='The URL of a video to be downloaded. Cannot be used with -f.')
 @click.option('-c', '--clip', default=None, multiple=True, help='The section of the last specified video to extract.')
 @click.option('-o', '--output', default=os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s'), help='Directory to store output files.')
-@click.argument('ydl_opts', nargs=-1)
 def clippyr(url, in_file, clip, ydl_opts, output=os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s')):
 
     if in_file and url:
