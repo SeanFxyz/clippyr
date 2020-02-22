@@ -1,18 +1,16 @@
-import os, sys, youtube_dl, ffmpeg, click, re, logging, glob, json, ast
+import os, sys, youtube_dl, ffmpeg, click, re, logging, json, ast
 from pathlib import PurePath
+from glob import glob
 
 # Download video from URL, return output file name
-def ydl(url, ydl_opts={}):
-    ydl_opts['writeinfojson'] = True
+def ydl_download(url, ydl_opts={}):
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
-    json_file_name = glob.glob(str(PurePath(ydl_opts['output']).parent) + '/*.json')
-    print("json_file: ", json_file_name)
-    with open(json_file_name) as json_file:
-        info_dict = ast.literal_eval(json_file.read())
-        print('source file name: ' + ydl.prepare_filename(ydl, info_dict))
+        info_dict = ydl.extract_info(url, download=False)
+        ydl.process_info(info_dict)
+        return ydl.prepare_filename(info_dict)
 
-# Check a list of clip specifier strings and return the bad ones.
+# Check a list of clip specifier strings and return a list of the bad ones.
 def check_clip_specs(specs):
     re_sec = re.compile('^[0-9]+\.*[0-9]*$')
     re_stamp = re.compile('^[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\.[0-9]+$')
@@ -52,20 +50,25 @@ def extract_clips(input_file, clips):
 @click.command(context_settings={'ignore_unknown_options': True})
 @click.option('-u', '--url', default='', help='The URL of a video to be downloaded.')
 @click.option('-c', '--clip', default=None, multiple=True, help='The section of the last specified video to extract.')
-@click.option('-o', '--output', default=os.path.join('clippyr_output', '%(title)s-%(id)s.%(ext)s'), help='Directory to store output files.')
-@click.option('-f', '--format', 'format_', default='', help='Video output format. See youtube-dl format options')
+@click.option('-o', '--output', default=os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s'), help='Directory to store output files.')
 @click.argument('ydl_opts', nargs=-1)
-def cmd(url, clip, format_, ydl_opts, output=os.path.join('clippyr_output', '%(title)s-%(id)s.%(ext)s')):
+def cmd(url, clip, ydl_opts, output=os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s')):
 
-    # TODO: If directory clippyr_output doesn't exist, create it.
 
-    source_file = ydl(url, ydl_opts={'output': output})
+    output_dir = str(PurePath(output).parent)
+    if os.path.isdir(output_dir):
+        if output_dir == 'output_clipper':
+            os.mkdir('output_clippyr')
+        else:
+            click.echo('Nonexistant non-default output directory ' + output_dir, err=True)
+
+    source_file = ydl_download(url, ydl_opts={'outtmpl': output})
 
     for s in check_clip_specs(clip):
         print('Bad clip specifier "' + s + '"')
         exit(1)
 
-    extract_clips(output, clip)
+    extract_clips(source_file, clip)
 
 if __name__=='__main__':
     cmd()

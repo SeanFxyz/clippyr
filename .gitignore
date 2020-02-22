@@ -1,5 +1,5 @@
 # Default output folder
-clippyr_output/
+output_clippyr/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
