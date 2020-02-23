@@ -11,8 +11,8 @@ A script that extracts a specified series of clips and/or still images from a la
 	                     HH:MM:SS[.x]-HH:MM:SS[.x] or [seconds]-[seconds].
 	  -i, --image TEXT   A still image to extract from the source file, specified
 	                     by HH:MM:SS[.x] or [seconds].
-	  -o, --output TEXT  youtube-dl output option. Stores files in
-	                     ./output_clippyr/ by default.
+	  -o, --output TEXT  With -u, specifies youtube-dl output option. With -f,
+	                     specifies output directory.
 	  --help             Show this message and exit.
 
 ## INSTALL

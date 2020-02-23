@@ -42,7 +42,7 @@ def unpack_spec(spec):
         return float(spec)
 
 # Extract clips from input_file, specified by time specifiers in clips.
-def extract_clips(input_file, clips):
+def extract_clips(input_file, clips, output_dir='output_clippyr'):
     for i in range(len(clips)):
         clip = clips[i]
         start, end = clip.split('-')
@@ -55,12 +55,12 @@ def extract_clips(input_file, clips):
         ffmpeg.input(input_file, ss=start).output(output_file, t=clip_len).overwrite_output().run()
 
 # Extract still images from input_file, specified by time specifiers in images.
-def extract_images(input_file, images):
+def extract_images(input_file, images, output_dir='output_clippyr'):
     for i in range(len(images)):
         image = images[i]
         image = str(unpack_spec(image))
         path = PurePath(input_file)
-        output_file = str(path.with_name(path.stem + '__image' + format(i, '0' + str(int( (len(images) / 10) ))) + '.png'))
+#        output_file = str(path.with_name(path.stem + '__image' + format(i, '0' + str(int( (len(images) / 10) ))) + '.png'))
 
         ffmpeg.input(input_file, ss=image).output(output_file, vframes=1).overwrite_output().run()
 
@@ -69,18 +69,27 @@ def extract_images(input_file, images):
 @click.option('-u', '--url', default='', multiple=False, help='The URL of a video to be downloaded. Cannot be used with -f.')
 @click.option('-c', '--clip', default=None, multiple=True, help='A clip to extract from the source file, specified by HH:MM:SS[.x]-HH:MM:SS[.x] or [seconds]-[seconds].')
 @click.option('-i', '--image', default=None, multiple=True, help='A still image to extract from the source file, specified by HH:MM:SS[.x] or [seconds].')
-@click.option('-o', '--output', default=os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s'), help='youtube-dl output option. Stores files in ./output_clippyr/ by default.')
-def clippyr(url, in_file, clip, image, output=os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s')):
+@click.option('-o', '--output', help='With -u, specifies youtube-dl output option. With -f, specifies output directory.')
+def clippyr(url, in_file, clip, image, output):
 
     if in_file and url:
         click.echo('Cannot use -f/--file and -u/--url simultaneously.')
         exit(1)
-    
-    if in_file == '' and url == '':
+    elif in_file == '' and url == '':
         click.echo('Must provide a url with -u or file name with -f')
         exit(1)
 
-    output_dir = str(PurePath(output).parent)
+    if output == '':
+        if url:
+            output = os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s')
+        elif in_file:
+            output = 'output_clippyr'
+
+    if url:
+        output_dir = str(PurePath(output).parent)
+    elif in_file:
+        output_dir = output
+
     if os.path.isdir(output_dir) == False:
         if output_dir == 'output_clippyr':
             os.mkdir('output_clippyr')
@@ -94,7 +103,7 @@ def clippyr(url, in_file, clip, image, output=os.path.join('output_clippyr', '%(
         source_file = in_file
 
     bad_specs = check_time_specs(clip, 'clip')
-    bad_specs = check_time_specs(image, 'image')
+    bad_specs += check_time_specs(image, 'image')
     if len(bad_specs):
         for s in bad_specs:
             print('Bad clip specifier "' + s + '"')
