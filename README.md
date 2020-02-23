@@ -14,3 +14,40 @@ A script that extracts a specified series of clips and/or still images from a la
 	  -o, --output TEXT  youtube-dl output option. Stores files in
 	                     ./output_clippyr/ by default.
 	  --help             Show this message and exit.
+
+## INSTALL
+Currently, you can install clippyr by cloning this repository and from within the directory using `pip install .`. Use `pip install --editable .` if you'd like to install it while being able to modify it.
+
+### Installation with venv (Unix/Linux):
+
+	$git clone https://github.com/SeanaldSeanson/clippyr.git
+	Cloning into 'clippyr'...
+	remote: Enumerating objects: 51, done.
+	remote: Counting objects: 100% (51/51), done.
+	remote: Compressing objects: 100% (33/33), done.
+	remote: Total 51 (delta 24), reused 41 (delta 17), pack-reused 0
+	Unpacking objects: 100% (51/51), done.
+	$cd clippyr/
+	$python -m venv venv
+	$source venv/bin/activate
+	(venv) $pip install --editable .
+
+### Installation without venv (Unix/Linux):
+
+	$git clone https://github.com/SeanaldSeanson/clippyr.git
+	Cloning into 'clippyr'...
+	remote: Enumerating objects: 51, done.
+	remote: Counting objects: 100% (51/51), done.
+	remote: Compressing objects: 100% (33/33), done.
+	remote: Total 51 (delta 24), reused 41 (delta 17), pack-reused 0
+	Unpacking objects: 100% (51/51), done.
+	$cd clippyr/
+	$pip install --editable .
+
+Note: On some Linux distributions you may need to use 'python3' in place of 'python' and/or 'pip3' in place of 'pip'.
+
+## EXAMPLES
+	$clippyr -f example.mkv -i 4 -c 2-6 -c 00:00:10.05-00:23:05.5
+	-- OUTPUT REDACTED --
+	$ls *mkv
+	example__clip0.mkv  example__clip1.mkv  example.mkv
