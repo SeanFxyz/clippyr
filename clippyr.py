@@ -1,4 +1,4 @@
-import os, sys, youtube_dl, ffmpeg, click, re, logging, json, ast
+import os, sys, youtube_dl, ffmpeg, click, re, json, ast
 from pathlib import PurePath
 from glob import glob
 
@@ -51,8 +51,8 @@ def extract_clips(input_file, clips):
 @click.option('-f', '--file', 'in_file', default='', multiple=False, help='File to clip from. Cannot be used with -u.')
 @click.option('-u', '--url', default='', multiple=False, help='The URL of a video to be downloaded. Cannot be used with -f.')
 @click.option('-c', '--clip', default=None, multiple=True, help='The section of the last specified video to extract.')
-@click.option('-o', '--output', default=os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s'), help='Directory to store output files.')
-def clippyr(url, in_file, clip, ydl_opts, output=os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s')):
+@click.option('-o', '--output', default=os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s'), help='youtube-dl output option. Stores files in ./output_clippyr/ by default.')
+def clippyr(url, in_file, clip, output=os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s')):
 
     if in_file and url:
         click.echo('Cannot use -f/--file and -u/--url simultaneously.')
