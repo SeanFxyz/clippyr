@@ -4,7 +4,7 @@ setup(
     name='clippyr',
     version='0.1',
     py_modules=['clippyr'],
-    install_requires=['click', 'youtube_dl', 'ffmpeg_python'],
+    install_requires=['click', 'youtube-dl', 'ffmpeg_python'],
     entry_points='''
         [console_scripts]
         clippyr=clippyr:clippyr
