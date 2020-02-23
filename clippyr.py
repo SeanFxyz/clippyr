@@ -33,7 +33,10 @@ def check_time_specs(specs, spec_type='clip'):
 def unpack_spec(spec):
     if ':' in spec:
         h, m, s = spec.split(':')
-        s, ms = s.split('.')
+        if '.' in s:
+            s, ms = s.split('.')
+        else:
+            ms = 0
         return int(h) * 3600 + int(m) * 60 + int(s) + float(ms) / (10 ** len(ms))
     else:
         return float(spec)
@@ -64,8 +67,8 @@ def extract_images(input_file, images):
 @click.command(context_settings={'ignore_unknown_options': True})
 @click.option('-f', '--file', 'in_file', default='', multiple=False, help='File to clip from. Cannot be used with -u.')
 @click.option('-u', '--url', default='', multiple=False, help='The URL of a video to be downloaded. Cannot be used with -f.')
-@click.option('-c', '--clip', default=None, multiple=True, help='A clip to extract from the source file, specified by HH:MM:SS.x-HH:MM:SS.x or [seconds]-[seconds].')
-@click.option('-i', '--image', default=None, multiple=True, help='A still image to extract from the source file, specified by HH:MM:SS.x or [seconds].')
+@click.option('-c', '--clip', default=None, multiple=True, help='A clip to extract from the source file, specified by HH:MM:SS[.x]-HH:MM:SS[.x] or [seconds]-[seconds].')
+@click.option('-i', '--image', default=None, multiple=True, help='A still image to extract from the source file, specified by HH:MM:SS[.x] or [seconds].')
 @click.option('-o', '--output', default=os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s'), help='youtube-dl output option. Stores files in ./output_clippyr/ by default.')
 def clippyr(url, in_file, clip, image, output=os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s')):
 
