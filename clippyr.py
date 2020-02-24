@@ -1,6 +1,5 @@
-import os, sys, youtube_dl, ffmpeg, click, re, json, ast
 from pathlib import PurePath
-from glob import glob
+import os, sys, youtube_dl, ffmpeg, click, re, json, ast
 
 # Download video from URL, return output file name
 def ydl_download(url, ydl_opts={}):
@@ -22,7 +21,7 @@ def check_time_specs(specs, spec_type='clip'):
                 bad_specs.append(s)
             else:
                 for t in s.split('-'):
-                    if is_bad(s):
+                    if is_bad(t):
                         bad_specs.append(s)
         elif spec_type == 'clip' or is_bad(s):
             bad_specs.append(s)
@@ -59,8 +58,8 @@ def extract_images(input_file, images, output_dir='output_clippyr'):
     for i in range(len(images)):
         image = images[i]
         image = str(unpack_spec(image))
-        path = PurePath(input_file)
-#        output_file = str(path.with_name(path.stem + '__image' + format(i, '0' + str(int( (len(images) / 10) ))) + '.png'))
+        path = PurePath(output_dir, input_file)
+        output_file = str(path.with_name(path.stem + '__image' + format(i, '0' + str(int( (len(images) / 10) ))) + '.png'))
 
         ffmpeg.input(input_file, ss=image).output(output_file, vframes=1).overwrite_output().run()
 
@@ -79,12 +78,13 @@ def clippyr(url, in_file, clip, image, output):
         click.echo('Must provide a url with -u or file name with -f')
         exit(1)
 
-    if output == '':
+    if bool(output) == False:
         if url:
             output = os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s')
         elif in_file:
             output = 'output_clippyr'
 
+    output_dir = ''
     if url:
         output_dir = str(PurePath(output).parent)
     elif in_file:
@@ -110,7 +110,7 @@ def clippyr(url, in_file, clip, image, output):
         exit(1)
 
     extract_clips(source_file, clip)
-    extract_images(source_file, image)
+    extract_images(source_file, image, output_dir)
 
 if __name__=='__main__':
     clippyr()

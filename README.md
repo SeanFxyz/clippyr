@@ -49,5 +49,5 @@ Note: On some Linux distributions you may need to use 'python3' in place of 'pyt
 ## EXAMPLES
 	$clippyr -f example.mkv -i 4 -c 2-6 -c 00:00:10.05-00:23:05.5
 	-- OUTPUT REDACTED --
-	$ls example*
+	$ls output_clippyr
 	example__clip0.mkv  example__clip1.mkv  example__image0.png  example.mkv
