@@ -58,7 +58,7 @@ def extract_images(input_file, images, output_dir='output_clippyr'):
     for i in range(len(images)):
         image = images[i]
         image = str(unpack_spec(image))
-        path = PurePath(output_dir, input_file)
+        path = PurePath(output_dir, PurePath(input_file).stem)
         output_file = str(path.with_name(path.stem + '__image' + format(i, '0' + str(int( (len(images) / 10) ))) + '.png'))
 
         ffmpeg.input(input_file, ss=image).output(output_file, vframes=1).overwrite_output().run()
