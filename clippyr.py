@@ -10,22 +10,24 @@ def ydl_download(url, ydl_opts={}):
         return ydl.prepare_filename(info_dict)
 
 # Check a list of clip specifier strings and return a list of the bad ones.
-def check_time_specs(specs, spec_type='clip'):
+def check_time_specs(specs):
     re_sec = re.compile('^[0-9]+\.*[0-9]*$')
     re_stamp = re.compile('^[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\.[0-9]+$')
     is_bad = lambda t : re_sec.fullmatch(t) == None and re_sec.fullmatch(t) == None
     bad_specs = []
     for s in specs:
         if '-' in s:
-            if spec_type == 'image':
-                bad_specs.append(s)
-            else:
+            if len(s.split('-')) == 2:
                 for t in s.split('-'):
                     if is_bad(t):
                         bad_specs.append(s)
-        elif spec_type == 'clip' or is_bad(s):
+            else:
+                bad_specs.append(s)
+        elif is_bad(s):
             bad_specs.append(s)
+
     return bad_specs
+
 
 # Unpacks a single timestamp to a float value in seconds. If not in
 # timestamp format, returns original spec converted to float.
@@ -40,36 +42,37 @@ def unpack_spec(spec):
     else:
         return float(spec)
 
-# Extract clips from input_file, specified by time specifiers in clips.
-def extract_clips(input_file, clips, output_dir='output_clippyr'):
+# Extract clips and/or still images specified in list specs from input_file.
+def extract(input_file, specs, output_dir='output_clippyr'):
+    path = PurePath(output_dir, PurePath(input_file).name)
+    clips = []
+    images = []
+    for s in specs:
+        if '-' in s:
+            clips.append(s)
+        else:
+            images.append(s)
+    for i in range(len(images)):
+        image = images[i]
+        image = str(unpack_spec(image))
+        output_file = str(path.with_name(path.stem + '__image' + format(i, '0' + str(int( (len(images) / 10) ))) + '.png'))
+        ffmpeg.input(input_file, ss=image).output(output_file, vframes=1).overwrite_output().run()
     for i in range(len(clips)):
         clip = clips[i]
         start, end = clip.split('-')
         start, end = unpack_spec(start), unpack_spec(end)
         start = str(start)
         clip_len = str(end - float(start))
-        path = PurePath(input_file)
         output_file = str(path.with_name(path.stem + '__clip' + format(i, '0' + str(int( (len(clips) / 10) ))) + path.suffix ))
-
         ffmpeg.input(input_file, ss=start).output(output_file, t=clip_len).overwrite_output().run()
 
-# Extract still images from input_file, specified by time specifiers in images.
-def extract_images(input_file, images, output_dir='output_clippyr'):
-    for i in range(len(images)):
-        image = images[i]
-        image = str(unpack_spec(image))
-        path = PurePath(output_dir, PurePath(input_file).stem)
-        output_file = str(path.with_name(path.stem + '__image' + format(i, '0' + str(int( (len(images) / 10) ))) + '.png'))
-
-        ffmpeg.input(input_file, ss=image).output(output_file, vframes=1).overwrite_output().run()
 
 @click.command(context_settings={'ignore_unknown_options': True})
 @click.option('-f', '--file', 'in_file', default='', multiple=False, help='File to clip from. Cannot be used with -u.')
 @click.option('-u', '--url', default='', multiple=False, help='The URL of a video to be downloaded. Cannot be used with -f.')
 @click.option('-c', '--clip', default=None, multiple=True, help='A clip to extract from the source file, specified by HH:MM:SS[.x]-HH:MM:SS[.x] or [seconds]-[seconds].')
-@click.option('-i', '--image', default=None, multiple=True, help='A still image to extract from the source file, specified by HH:MM:SS[.x] or [seconds].')
 @click.option('-o', '--output', help='With -u, specifies youtube-dl output option. With -f, specifies output directory.')
-def clippyr(url, in_file, clip, image, output):
+def clippyr(url, in_file, clip, output):
 
     if in_file and url:
         click.echo('Cannot use -f/--file and -u/--url simultaneously.')
@@ -102,15 +105,16 @@ def clippyr(url, in_file, clip, image, output):
     elif in_file:
         source_file = in_file
 
-    bad_specs = check_time_specs(clip, 'clip')
-    bad_specs += check_time_specs(image, 'image')
+    bad_specs = check_time_specs(clip)
     if len(bad_specs):
         for s in bad_specs:
-            print('Bad clip specifier "' + s + '"')
+            click.echo('Bad clip specifier "' + s + '"')
         exit(1)
 
-    extract_clips(source_file, clip)
-    extract_images(source_file, image, output_dir)
+    extract(source_file, clip)
+
+#    extract_clips(source_file, clip)
+#    extract_images(source_file, image, output_dir)
 
 if __name__=='__main__':
     clippyr()
