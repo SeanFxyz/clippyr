@@ -4,13 +4,11 @@ A script that extracts a specified series of clips and/or still images from a la
 	Usage: clippyr [OPTIONS]
 	
 	Options:
-	  -f, --file TEXT    File to clip from. Cannot be used with -u.
-	  -u, --url TEXT     The URL of a video to be downloaded. Cannot be used with
-	                     -f.
-	  -c, --clip TEXT    A clip to extract from the source file, specified by
-	                     HH:MM:SS[.x]-HH:MM:SS[.x] or [seconds]-[seconds].
-	  -i, --image TEXT   A still image to extract from the source file, specified
-	                     by HH:MM:SS[.x] or [seconds].
+	  -f, --file TEXT    File to clip from.
+	  -u, --url TEXT     The URL of a video to be downloaded
+	  -c, --clip TEXT    A comma-separated list of clips or still images to
+	                     extract from the last specified url or file, specified by
+	                     HH:MM:SS[.x][-HH:MM:SS[.x]] or [seconds][-[seconds]].
 	  -o, --output TEXT  With -u, specifies youtube-dl output option. With -f,
 	                     specifies output directory.
 	  --help             Show this message and exit.
@@ -47,7 +45,7 @@ Currently, you can install clippyr by cloning this repository and from within th
 Note: On some Linux distributions you may need to use 'python3' in place of 'python' and/or 'pip3' in place of 'pip'.
 
 ## EXAMPLES
-	$clippyr -f example.mkv -i 4 -c 2-6 -c 00:00:10.05-00:23:05.5
+	$clippyr -f example.mkv -c 4,2-6,00:00:10.05-00:23:05.5
 	-- OUTPUT REDACTED --
 	$ls output_clippyr
 	example__clip0.mkv  example__clip1.mkv  example__image0.png
