@@ -69,8 +69,8 @@ def extract(input_file, specs, output_dir='output_clippyr'):
 
 @click.command(context_settings={'ignore_unknown_options': True})
 @click.option('-f', '--file', 'in_file', default='', multiple=False, help='File to clip from.')
-@click.option('-u', '--url', default='', multiple=True, help='The URL of a video to be downloaded')
-@click.option('-c', '--clip', default=None, multiple=True, help='A comma-separated list of clips or still images to extract from the last specified url or file, specified by HH:MM:SS[.x][-HH:MM:SS[.x]] or [seconds][-[seconds]].')
+@click.option('-u', '--url', default='', multiple=False, help='The URL of a video to be downloaded')
+@click.option('-c', '--clip', default=None, multiple=False, help='A comma-separated list of clips or still images to extract from the specified url or file, specified by HH:MM:SS[.x][-HH:MM:SS[.x]] or [seconds][-[seconds]].')
 @click.option('-o', '--output', help='With -u, specifies youtube-dl output option. With -f, specifies output directory.')
 def clippyr(url, in_file, clip, output):
 
@@ -105,16 +105,15 @@ def clippyr(url, in_file, clip, output):
     elif in_file:
         source_file = in_file
 
-    bad_specs = check_time_specs(clip)
+    specs = clip.split(',')
+
+    bad_specs = check_time_specs(specs)
     if len(bad_specs):
         for s in bad_specs:
             click.echo('Bad clip specifier "' + s + '"')
         exit(1)
 
-    extract(source_file, clip)
-
-#    extract_clips(source_file, clip)
-#    extract_images(source_file, image, output_dir)
+    extract(source_file, specs)
 
 if __name__=='__main__':
     clippyr()

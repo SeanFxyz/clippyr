@@ -7,7 +7,7 @@ A script that extracts a specified series of clips and/or still images from a la
 	  -f, --file TEXT    File to clip from.
 	  -u, --url TEXT     The URL of a video to be downloaded
 	  -c, --clip TEXT    A comma-separated list of clips or still images to
-	                     extract from the last specified url or file, specified by
+	                     extract from the specified url or file, specified by
 	                     HH:MM:SS[.x][-HH:MM:SS[.x]] or [seconds][-[seconds]].
 	  -o, --output TEXT  With -u, specifies youtube-dl output option. With -f,
 	                     specifies output directory.
