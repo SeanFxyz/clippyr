@@ -55,7 +55,7 @@ def extract(input_file, specs, output_dir='output_clippyr'):
     for i in range(len(images)):
         image = images[i]
         image = str(unpack_spec(image))
-        output_file = str(path.with_name(path.stem + '__image' + format(i, '0' + str(int( (len(images) / 10) ))) + '.png'))
+        output_file = str(path.with_name(path.stem + '__image' + format(i, '0' + str(int((len(images) / 10)))) + '.png'))
         ffmpeg.input(input_file, ss=image).output(output_file, vframes=1).overwrite_output().run()
     for i in range(len(clips)):
         clip = clips[i]
@@ -63,7 +63,7 @@ def extract(input_file, specs, output_dir='output_clippyr'):
         start, end = unpack_spec(start), unpack_spec(end)
         start = str(start)
         clip_len = str(end - float(start))
-        output_file = str(path.with_name(path.stem + '__clip' + format(i, '0' + str(int( (len(clips) / 10) ))) + path.suffix ))
+        output_file = str(path.with_name(path.stem + '__clip' + format(i, '0' + str(int((len(clips) / 10)))) + path.suffix))
         ffmpeg.input(input_file, ss=start).output(output_file, t=clip_len).overwrite_output().run()
 
 
