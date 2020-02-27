@@ -12,7 +12,7 @@ def ydl_download(url, ydl_opts={}):
 # Check a list of clip specifier strings and return a list of the bad ones.
 def check_time_specs(specs):
     re_sec = re.compile(r'^[0-9]+\.*[0-9]*$')
-    re_stamp = re.compile(r'^[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\.[0-9]+$')
+    re_stamp = re.compile(r'^[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\.*[0-9]*$')
     is_bad = lambda t: re_sec.fullmatch(t) == None and re_sec.fullmatch(t) == None
     bad_specs = []
     for spec in specs:
