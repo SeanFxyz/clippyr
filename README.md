@@ -15,7 +15,7 @@ A script that extracts a specified series of clips and/or still images from a la
 
 
 ## Demo
-[![asciicast](https://asciinema.org/a/DssPeYYjKX3Ua2zkL4VEteu0B.svg)](https://asciinema.org/a/DssPeYYjKX3Ua2zkL4VEteu0B)
+[![asciicast](https://asciinema.org/a/u72Y9B848yjfhnuawb38pg9Zg.svg)](https://asciinema.org/a/u72Y9B848yjfhnuawb38pg9Zg)
 
 ## INSTALL
 Currently, you can install clippyr by cloning this repository and from within the directory using `pip install .`. Use `pip install --editable .` if you'd like to install it while being able to modify it.
