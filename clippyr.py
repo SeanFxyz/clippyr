@@ -13,7 +13,7 @@ def ydl_download(url, ydl_opts={}):
 def check_time_specs(specs):
     re_sec = re.compile(r'^[0-9]+\.*[0-9]*$')
     re_stamp = re.compile(r'^[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\.*[0-9]*$')
-    is_bad = lambda t: re_sec.fullmatch(t) == None and re_sec.fullmatch(t) == None
+    is_bad = lambda t: re_sec.fullmatch(t) == None and re_stamp.fullmatch(t) == None
     bad_specs = []
     for spec in specs:
         if '-' in spec:
@@ -21,6 +21,7 @@ def check_time_specs(specs):
                 for t in spec.split('-'):
                     if is_bad(t):
                         bad_specs.append(spec)
+                        break
             else:
                 bad_specs.append(spec)
         elif is_bad(spec):
@@ -28,17 +29,18 @@ def check_time_specs(specs):
 
     return bad_specs
 
-
 # Unpacks a single timestamp to a float value in seconds. If not in
 # timestamp format, returns original spec converted to float.
 def unpack_spec(spec):
     if ':' in spec:
         h, m, s = spec.split(':')
+        ms = 0
         if '.' in s:
             s, ms = s.split('.')
-        else:
-            ms = 0
-        return int(h) * 3600 + int(m) * 60 + int(s) + float(ms) / (10 ** len(ms))
+        seconds = int(h) * 3600 + int(m) * 60 + int(s)
+        if int(ms):
+            seconds += int(ms) / (10 ** len(ms))
+        return float(seconds)
     else:
         return float(spec)
 
