@@ -74,7 +74,11 @@ def extract(input_file, specs, output_dir='output_clippyr'):
 @click.option('-u', '--url', default='', multiple=False, help='The URL of a video to be downloaded')
 @click.option('-c', '--clip', default=None, multiple=False, help='A comma-separated list of clips or still images to extract from the specified url or file, specified by HH:MM:SS[.x][-HH:MM:SS[.x]] or [seconds][-[seconds]].')
 @click.option('-o', '--output', help='With -u, specifies youtube-dl output option. With -f, specifies output directory.')
-def clippyr(url, in_file, clip, output):
+def cmd(url, in_file, clip, output):
+    main(url, in_file, clip, output)
+    exit(0)
+
+def main(url, in_file, clip, output):
 
     if in_file and url:
         click.echo('Cannot use -f/--file and -u/--url simultaneously.')
@@ -118,5 +122,4 @@ def clippyr(url, in_file, clip, output):
     extract(source_file, specs)
 
 if __name__=='__main__':
-    clippyr()
-    exit(0)
+    cmd()
