@@ -23,19 +23,7 @@ Currently, you can install clippyr by cloning this repository and from within th
 ### Requirements
 Other than those prerequisites installed automatically by pip, you will need to have ffmpeg installed.
 
-### Installation with venv (Unix/Linux):
-
-	$git clone https://github.com/SeanaldSeanson/clippyr.git
-	Cloning into 'clippyr'...
-	remote: Enumerating objects: 51, done.
-	remote: Counting objects: 100% (51/51), done.
-	remote: Compressing objects: 100% (33/33), done.
-	remote: Total 51 (delta 24), reused 41 (delta 17), pack-reused 0
-	Unpacking objects: 100% (51/51), done.
-	$cd clippyr/
-	$python -m venv venv
-	$source venv/bin/activate
-	(venv) $pip install --editable .
+Note: On some Linux distributions you may need to use 'python3' in place of 'python' and/or 'pip3' in place of 'pip'.
 
 ### Installation without venv (Unix/Linux):
 
@@ -49,7 +37,19 @@ Other than those prerequisites installed automatically by pip, you will need to 
 	$cd clippyr/
 	$pip install --editable .
 
-Note: On some Linux distributions you may need to use 'python3' in place of 'python' and/or 'pip3' in place of 'pip'.
+### Installation with venv (Unix/Linux):
+
+	$git clone https://github.com/SeanaldSeanson/clippyr.git
+	Cloning into 'clippyr'...
+	remote: Enumerating objects: 51, done.
+	remote: Counting objects: 100% (51/51), done.
+	remote: Compressing objects: 100% (33/33), done.
+	remote: Total 51 (delta 24), reused 41 (delta 17), pack-reused 0
+	Unpacking objects: 100% (51/51), done.
+	$cd clippyr/
+	$python -m venv venv
+	$source venv/bin/activate
+	(venv) $pip install --editable .
 
 ## EXAMPLES
 	$clippyr -f example.mkv -c 4,2-6,00:00:10.05-00:23:05.5
