@@ -57,16 +57,32 @@ def extract(input_file, specs, output_dir='output_clippyr'):
     for i in range(len(images)):
         image = images[i]
         image = str(unpack_spec(image))
-        output_file = str(path.with_name(path.stem + '__image' + format(i, '0' + str(int((len(images) / 10)))) + '.png'))
-        ffmpeg.input(input_file, ss=image).output(output_file, vframes=1).overwrite_output().run()
+        output_file = str(path.with_name(
+            path.stem +
+            '__image' +
+            format(i, '0' + str(int((len(images) / 10)))) +
+            '.png'))
+        (ffmpeg
+                .input(input_file, ss=image)
+                .output(output_file, vframes=1)
+                .overwrite_output()
+                .run())
     for i in range(len(clips)):
         clip = clips[i]
         start, end = clip.split('-')
         start, end = unpack_spec(start), unpack_spec(end)
         start = str(start)
         clip_len = str(end - float(start))
-        output_file = str(path.with_name(path.stem + '__clip' + format(i, '0' + str(int((len(clips) / 10)))) + path.suffix))
-        ffmpeg.input(input_file, ss=start).output(output_file, t=clip_len).overwrite_output().run()
+        output_file = str(path.with_name(
+            path.stem +
+            '__clip' +
+            format(i, '0' + str(int((len(clips) / 10)))) +
+            path.suffix))
+        (ffmpeg
+                .input(input_file, ss=start)
+                .output(output_file, t=clip_len)
+                .overwrite_output()
+                .run())
 
 
 @click.command(context_settings={'ignore_unknown_options': True})
@@ -80,36 +96,39 @@ def cmd(url, in_file, clip, output):
 
 def main(url, in_file, clip, output):
 
-    if in_file and url:
-        click.echo('Cannot use -f/--file and -u/--url simultaneously.')
-        exit(1)
-    elif in_file == '' and url == '':
-        click.echo('Must provide a url with -u or file name with -f')
-        exit(1)
-
-    if bool(output) == False:
-        if url:
-            output = os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s')
-        elif in_file:
-            output = 'output_clippyr'
-
     output_dir = ''
-    if url:
+    source_file = ''
+
+    if url and not bool(in_file):
+        if bool(output) == False:
+            output = os.path.join('output_clippyr', '%(title)s-%(id)s.%(ext)s')
         output_dir = str(PurePath(output).parent)
-    elif in_file:
+        if os.path.isdir(output_dir) == False:
+            if output_dir == 'output_clippyr':
+                os.mkdir('output_clippyr')
+            else:
+                click.echo('Nonexistent non-default output directory ' + output_dir, err=True)
+                exit(1)
+
+        source_file = ydl_download(url, ydl_opts={'outtmpl': output})
+
+    elif in_file and not bool(url):
+        if bool(output) == False:
+            output = 'output_clippyr'
         output_dir = output
 
-    if os.path.isdir(output_dir) == False:
-        if output_dir == 'output_clippyr':
-            os.mkdir('output_clippyr')
-        else:
-            click.echo('Nonexistent non-default output directory ' + output_dir, err=True)
-            exit(1)
+        if os.path.isdir(output_dir) == False:
+            if output_dir == 'output_clippyr':
+                os.mkdir('output_clippyr')
+            else:
+                click.echo('Nonexistent non-default output directory ' + output_dir, err=True)
 
-    if url:
-        source_file = ydl_download(url, ydl_opts={'outtmpl': output})
-    elif in_file:
         source_file = in_file
+
+
+    else:
+        click.echo('Cannot use -f/--file and -u/--url simultaneously.')
+        exit(1)
 
     specs = clip.split(',')
 
